@@ -1,0 +1,32 @@
+[project]
+name = "meal-planner"
+version = "0.1.0"
+description = ""
+authors = [{ name = "Ondřej Maxa", email = "omaxa@csas.cz" }]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=2.0.3,<3.0.0",
+    "numpy>=1.25.2,<2.0.0",
+    "matplotlib>=3.8.1,<4.0.0",
+    "seaborn>=0.13.2,<1.0.0",
+    "jupyterlab>=4.0.4,<5.0.0",
+    "scipy>=1.11.1,<2.0.0",
+    "scikit-learn>=1.3.2,<2.0.0",
+    "bs4 (>=0.0.2,<0.0.3)",
+    "pulp (>=3.3.0,<4.0.0)",
+]
+
+[tool.poetry]
+packages = [
+    { include = "meal_planner", from = "src" },
+    { include = "food", from = "src" },
+    { include = "nutrition", from = "src" },
+    { include = "parsing", from = "src" },
+    { include = "fingrlix", from = "src" },
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
