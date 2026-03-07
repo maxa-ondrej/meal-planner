@@ -55,16 +55,28 @@ class BatchResult:
     batch_name: str
     days: List[Tuple[datetime, OptimizationResult]]  # List of (date, result)
     
+    # Food type ordering as it appears on the website
+    _TYPE_ORDER = {
+        "Snídaně": 0,
+        "Svačina & dezert": 1,
+        "Hlavní jídlo": 2,
+        "Extras": 3,
+    }
+    
     @property
-    def shopping_list(self) -> dict[str, int]:
-        """Aggregate all foods across all days in the batch."""
+    def shopping_list(self) -> List[Tuple[Food, int]]:
+        """Aggregate all foods across all days in the batch, preserving Food objects."""
         aggregated = defaultdict(int)
+        food_map = {}  # Map key to Food object
         for _, result in self.days:
             for food, qty in result.plan:
                 # Use (name, variant) as key for precise aggregation
-                key = f"{food.name} ({food.variant})"
+                key = (food.name, food.variant)
                 aggregated[key] += qty
-        return dict(aggregated)
+                if key not in food_map:
+                    food_map[key] = food
+        # Return list of (Food, quantity) tuples
+        return [(food_map[key], qty) for key, qty in aggregated.items()]
     
     @property
     def total_price(self) -> int:
@@ -92,8 +104,13 @@ class BatchResult:
         lines.append(f"{'='*60}")
         lines.append(f"🛒 SHOPPING LIST FOR {self.batch_name}")
         lines.append(f"{'='*60}")
-        for item, qty in sorted(self.shopping_list.items()):
-            lines.append(f"  {qty}x {item}")
+        # Sort by type (using website order), then alphabetically by name
+        sorted_list = sorted(
+            self.shopping_list,
+            key=lambda x: (self._TYPE_ORDER.get(x[0].type, 999), x[0].name, x[0].variant)
+        )
+        for food, qty in sorted_list:
+            lines.append(f"  {qty}x {food.name} ({food.variant})")
         lines.append("")
         lines.append(f"💰 TOTAL BATCH PRICE: {self.total_price} CZK")
         lines.append(f"{'='*60}")

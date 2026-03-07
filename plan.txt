@@ -30,13 +30,13 @@ BATCH: FR_SA_SU
 ============================================================
 🛒 SHOPPING LIST FOR FR_SA_SU
 ============================================================
-  1x GRILLED CHICKEN (kus)
+  1x MONTE (Standard)
   2x KOREAN CHICKEN (Bulking)
   1x KOREAN CHICKEN (Standard)
-  1x MONTE (Standard)
   1x PORK BURRITO BOWL (Bulking)
   2x PORK BURRITO BOWL (Weight Loss)
   2x STAY GLOWING (Standard)
+  1x GRILLED CHICKEN (kus)
 
 💰 TOTAL BATCH PRICE: 1523 CZK
 ============================================================
@@ -66,13 +66,13 @@ BATCH: MO_TU
 ============================================================
 🛒 SHOPPING LIST FOR MO_TU
 ============================================================
-  1x CHILLI GREENS (kus)
   1x IN MY CURRY ERA (Bulking)
   1x IN MY CURRY ERA (Standard)
   1x KOREAN CHICKEN (Bulking)
   1x KOREAN CHICKEN (Standard)
   1x POWER BOOST (Bulking)
   1x POWER BOOST (Weight Loss)
+  1x CHILLI GREENS (kus)
 
 💰 TOTAL BATCH PRICE: 1175 CZK
 ============================================================
@@ -103,12 +103,12 @@ BATCH: WE_TH
 ============================================================
 🛒 SHOPPING LIST FOR WE_TH
 ============================================================
+  1x LOTUS TOFFEE PANCAKES (Standard)
   1x CREAMY SPINACH CHICKEN (Bulking)
   1x CREAMY SPINACH CHICKEN (Standard)
   1x GRATIN CHICK’N (Weight Loss)
   1x KOREAN CHICKEN (Bulking)
   1x KOREAN CHICKEN (Standard)
-  1x LOTUS TOFFEE PANCAKES (Standard)
   1x PROTEIN CHEEZUS (Standard)
   1x SWEET POTATOES (kus)
 
@@ -150,14 +150,14 @@ BATCH: FR_SA_SU
 ============================================================
 🛒 SHOPPING LIST FOR FR_SA_SU
 ============================================================
+  1x SHAK IT TO THE MAX (Standard)
   2x BBQ CHICKEN MAC&CHEESE (Bulking)
   1x BBQ CHICKEN MAC&CHEESE (Standard)
+  2x KOREAN CHICKEN (Bulking)
+  1x KOREAN CHICKEN (Standard)
   2x CHICKEN WINGS (kus)
   2x CHILLI CON CARNE (kus)
   1x GRILLED CHICKEN (kus)
-  2x KOREAN CHICKEN (Bulking)
-  1x KOREAN CHICKEN (Standard)
-  1x SHAK IT TO THE MAX (Standard)
 
 💰 TOTAL BATCH PRICE: 1734 CZK
 ============================================================
@@ -188,12 +188,12 @@ BATCH: MO_TU
 🛒 SHOPPING LIST FOR MO_TU
 ============================================================
   1x BOUNTY QUARK BOWL (Standard)
-  1x CHILLI CON CARNE (kus)
   1x KOREAN CHICKEN (Bulking)
   1x KOREAN CHICKEN (Weight Loss)
   1x MARRY ME MEATBALLS (Bulking)
   1x MARRY ME MEATBALLS (Standard)
   1x PROTEIN CHEEZUS (Standard)
+  1x CHILLI CON CARNE (kus)
 
 💰 TOTAL BATCH PRICE: 1125 CZK
 ============================================================
@@ -223,13 +223,13 @@ BATCH: WE_TH
 ============================================================
 🛒 SHOPPING LIST FOR WE_TH
 ============================================================
-  1x CHILLI GREENS (kus)
   1x COCONUT TIRAMISU (Standard)
   1x FAJITA BOWL (Bulking)
   1x FAJITA BOWL (Standard)
   1x JOLLOF PLZ (Bulking)
   1x KOREAN CHICKEN (Bulking)
   1x KOREAN CHICKEN (Standard)
+  1x CHILLI GREENS (kus)
 
 💰 TOTAL BATCH PRICE: 1120 CZK
 ============================================================
@@ -267,12 +267,12 @@ BATCH: FR_SA_SU
 ============================================================
 🛒 SHOPPING LIST FOR FR_SA_SU
 ============================================================
-  2x BEEF SHAWARMA MAC & CHEESE (Bulking)
+  1x OREO PANCAKES (Standard)
   1x CHOCOLATE PUDDING & BANANAS (Standard)
+  2x BEEF SHAWARMA MAC & CHEESE (Bulking)
   1x KOREAN CHICKEN (Bulking)
   2x KOREAN CHICKEN (Weight Loss)
   1x MADE IN CHINA BOWL (Bulking)
-  1x OREO PANCAKES (Standard)
   2x PARMESAN CHICKEN (Weight Loss)
 
 💰 TOTAL BATCH PRICE: 1690 CZK
@@ -303,11 +303,11 @@ BATCH: MO_TU
 ============================================================
 🛒 SHOPPING LIST FOR MO_TU
 ============================================================
+  1x LOTUS QUARK BOWL (Standard)
+  1x PROTEIN OREO PUDDING (Standard)
   1x KOREAN CHICKEN (Standard)
   1x KOREAN CHICKEN (Weight Loss)
-  1x LOTUS QUARK BOWL (Standard)
   1x PROTEIN CHEEZUS (Standard)
-  1x PROTEIN OREO PUDDING (Standard)
   1x PUERTO RICAN VIBES (Bulking)
   1x PUERTO RICAN VIBES (Standard)
 
@@ -340,13 +340,13 @@ BATCH: WE_TH
 ============================================================
 🛒 SHOPPING LIST FOR WE_TH
 ============================================================
-  1x CHILLI GREENS (kus)
+  1x KIT KAT QUARK BOWL (Standard)
   1x HOT MAMA BOWL (Bulking)
   1x HOT MAMA BOWL (Standard)
-  1x KIT KAT QUARK BOWL (Standard)
   1x KOREAN CHICKEN (Bulking)
   1x KOREAN CHICKEN (Standard)
   1x MEXI MAC BEEF (Bulking)
+  1x CHILLI GREENS (kus)
   1x SWEET POTATOES (kus)
 
 💰 TOTAL BATCH PRICE: 1200 CZK
@@ -388,13 +388,13 @@ BATCH: FR_SA_SU
 🛒 SHOPPING LIST FOR FR_SA_SU
 ============================================================
   2x BERRY TIRAMISU (Standard)
-  2x CHILLI GREENS (kus)
-  1x GOLD DIGGER (kus)
   2x GRILLED CHICKEN SPINACH BURGER (Bulking)
   1x GRILLED CHICKEN SPINACH BURGER (Standard)
   1x KOREAN CHICKEN (Bulking)
   2x TINGA CHICKEN BOWL (Bulking)
   1x TINGA CHICKEN BOWL (Standard)
+  2x CHILLI GREENS (kus)
+  1x GOLD DIGGER (kus)
 
 💰 TOTAL BATCH PRICE: 1714 CZK
 ============================================================
