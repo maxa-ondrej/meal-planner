@@ -16,8 +16,10 @@ def parse_to_menu(soup: BeautifulSoup):
         try:
             parsed_food = _parse_food_card(food)
             foods_list.extend(parsed_food)
-        except FoodCardParseError as e:
-            print(f"Warning: Skipping a food card due to parse error: {e}")
+        except FoodCardParseError:
+            pass
+    if not foods_list:
+        raise NoMenuFoundError("No valid food cards found in the menu section.")
     return foods_list
 
 def _parse_food_card(soup: Tag) -> list[Food]:

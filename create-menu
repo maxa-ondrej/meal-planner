@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+poetry run python ./src/fingrlix --weeks 4 > plan.txt
