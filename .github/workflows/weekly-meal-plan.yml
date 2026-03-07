@@ -1,0 +1,49 @@
+name: Weekly Meal Plan Notification
+
+on:
+  schedule:
+    # Run every Monday at 8:00 AM UTC (adjust timezone as needed)
+    - cron: '0 8 * * 1'
+  
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      weeks:
+        description: 'Weeks to fetch (space-separated, e.g., "2 3")'
+        required: false
+        default: '2 3'
+
+jobs:
+  fetch-and-notify:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+      
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction --no-root
+      
+      - name: Fetch meal plans and send notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "⚠️  DISCORD_WEBHOOK_URL secret not set. Running without Discord notification."
+            poetry run python fetch_weekly_plan.py --weeks ${{ github.event.inputs.weeks || '2 3' }}
+          else
+            poetry run python fetch_weekly_plan.py --weeks ${{ github.event.inputs.weeks || '2 3' }} --discord-webhook "$DISCORD_WEBHOOK_URL"
+          fi
