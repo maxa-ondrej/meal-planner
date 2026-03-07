@@ -6,6 +6,7 @@ import argparse
 import os
 import sys
 from nutrition.models import PersonalData
+from nutrition import calculate_nutrition_intake
 from fingrlix import prepare_next_menu
 import requests
 
@@ -85,6 +86,9 @@ def main():
         activity_level="sedentary",
         weight_plan="lose_weight",
     )
+    
+    # Calculate target nutrition
+    target_nutrition = calculate_nutrition_intake(personal_data)
 
     # Get the max week we need
     max_week = max(args.weeks)
@@ -146,17 +150,20 @@ def main():
             output_lines.append("")
     
     # Add summary statistics
+    avg_price_per_day = total_price / total_days if total_days > 0 else 0
+    
     output_lines.append("=" * 60)
     output_lines.append("📊 SUMMARY")
     output_lines.append("=" * 60)
     output_lines.append(f"💰 Total Price: {total_price} CZK")
+    output_lines.append(f"💵 Average Price per Day: {avg_price_per_day:.0f} CZK")
     output_lines.append(f"📅 Total Days: {total_days}")
     output_lines.append("")
     output_lines.append("📈 Average Daily Nutrition:")
-    output_lines.append(f"   Calories: {avg_calories:.0f} kcal")
-    output_lines.append(f"   Protein:  {avg_protein:.0f} g")
-    output_lines.append(f"   Fat:      {avg_fat:.0f} g")
-    output_lines.append(f"   Carbs:    {avg_carbs:.0f} g")
+    output_lines.append(f"   Calories: {avg_calories:.0f} kcal (target: {target_nutrition.calories})")
+    output_lines.append(f"   Protein:  {avg_protein:.0f} g (target: {target_nutrition.protein})")
+    output_lines.append(f"   Fat:      {avg_fat:.0f} g (target: {target_nutrition.fat})")
+    output_lines.append(f"   Carbs:    {avg_carbs:.0f} g (target: {target_nutrition.carbohydrates})")
     output_lines.append("=" * 60)
     
     output = "\n".join(output_lines)
