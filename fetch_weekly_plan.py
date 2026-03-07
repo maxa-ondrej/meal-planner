@@ -102,6 +102,31 @@ def main():
         week_batches = all_batches[start_idx:end_idx]
         selected_batches.extend(week_batches)
     
+    # Calculate totals and averages
+    total_price = 0
+    total_days = 0
+    sum_calories = 0
+    sum_protein = 0
+    sum_fat = 0
+    sum_carbs = 0
+    
+    for batch in selected_batches:
+        if batch is None:
+            continue
+        total_price += batch.total_price
+        for _, result in batch.days:
+            total_days += 1
+            sum_calories += result.totals.calories
+            sum_protein += result.totals.protein
+            sum_fat += result.totals.fat
+            sum_carbs += result.totals.carbohydrates
+    
+    # Calculate averages
+    avg_calories = sum_calories / total_days if total_days > 0 else 0
+    avg_protein = sum_protein / total_days if total_days > 0 else 0
+    avg_fat = sum_fat / total_days if total_days > 0 else 0
+    avg_carbs = sum_carbs / total_days if total_days > 0 else 0
+    
     # Generate output
     output_lines = []
     output_lines.append(f"📅 **Meal Plans for Weeks {', '.join(map(str, args.weeks))}**\n")
@@ -119,6 +144,20 @@ def main():
             # Full format for console
             output_lines.append(str(batch))
             output_lines.append("")
+    
+    # Add summary statistics
+    output_lines.append("=" * 60)
+    output_lines.append("📊 SUMMARY")
+    output_lines.append("=" * 60)
+    output_lines.append(f"💰 Total Price: {total_price} CZK")
+    output_lines.append(f"📅 Total Days: {total_days}")
+    output_lines.append("")
+    output_lines.append("📈 Average Daily Nutrition:")
+    output_lines.append(f"   Calories: {avg_calories:.0f} kcal")
+    output_lines.append(f"   Protein:  {avg_protein:.0f} g")
+    output_lines.append(f"   Fat:      {avg_fat:.0f} g")
+    output_lines.append(f"   Carbs:    {avg_carbs:.0f} g")
+    output_lines.append("=" * 60)
     
     output = "\n".join(output_lines)
     
