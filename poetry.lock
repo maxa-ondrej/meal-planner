@@ -3192,4 +3192,4 @@ test = ["pytest", "websockets"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "7d2f6e177a0417893f09bdc57bbd4c8945830b01e3df8f8d278c5bbdb6792524"
+content-hash = "e6144e8d0fbfe925ef4e4c1c045572b67bdb83d2b0f69acea2278334d074c8b9"
