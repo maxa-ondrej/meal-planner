@@ -27,7 +27,10 @@ This repository includes a GitHub Action that automatically fetches meal plans a
 The workflow is defined in `.github/workflows/weekly-meal-plan.yml` and will:
 - Run automatically every Monday at 8:00 AM UTC
 - Fetch meal plans for weeks 2 and 3
-- Send a summary to your Discord channel
+- Send beautifully formatted Discord embeds with:
+  - Individual embeds for each day's meal plan
+  - Shopping list embeds per batch
+  - Summary statistics embed
 
 You can also trigger it manually:
 1. Go to Actions tab in your GitHub repository
@@ -85,8 +88,22 @@ personal_data = PersonalData(
 
 ## Output Format
 
-The Discord notification includes:
-- Batch name and total price
-- Shopping list (first 5 items, with count of remaining items)
+The Discord notification uses rich embeds for better visual presentation:
+
+### 📅 Daily Meal Plan Embeds (Blue)
+- Date and batch name
+- Meals grouped by type (Snídaně, Hlavní jídlo, Extras, etc.)
+- Nutrition information (calories, protein, fat, carbs)
+- Daily price
+
+### 🛒 Shopping List Embeds (Green)
+- One embed per batch
+- Items grouped by food type
+- Batch total price
+
+### 📊 Summary Embed (Purple)
+- Total price and average price per day
+- Total days covered
+- Average daily nutrition with target values
 
 For full details, run the script locally without the Discord webhook option.

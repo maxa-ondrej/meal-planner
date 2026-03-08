@@ -5,56 +5,137 @@ Fetch meal plans for specific weeks and optionally send to Discord webhook.
 import argparse
 import os
 import sys
+from datetime import datetime
 from nutrition.models import PersonalData
 from nutrition import calculate_nutrition_intake
 from fingrlix import prepare_next_menu
 import requests
 
 
-def format_batch_summary(batch_result) -> str:
-    """Format batch result as a concise summary for Discord."""
-    if batch_result is None:
-        return ""
+def create_day_embed(day: datetime, result, batch_name: str) -> dict:
+    """Create a Discord embed for a single day's meal plan."""
+    # Group meals by type
+    meals_by_type = {}
+    for food, qty in result.plan:
+        if food.type not in meals_by_type:
+            meals_by_type[food.type] = []
+        meals_by_type[food.type].append((food, qty))
     
-    lines = []
-    lines.append(f"**{batch_result.batch_name}** - {batch_result.total_price} CZK")
+    # Create fields for each meal type
+    fields = []
+    for meal_type, meals in meals_by_type.items():
+        meal_items = [f"{qty}× {food.name} ({food.variant})" for food, qty in meals]
+        fields.append({
+            "name": f"🍽️ {meal_type}",
+            "value": "\n".join(meal_items),
+            "inline": False
+        })
     
-    # Show shopping list
+    # Add nutrition field
+    fields.append({
+        "name": "📊 Nutrition",
+        "value": f"**{result.totals.calories}** kcal | **{result.totals.protein}**g protein | **{result.totals.fat}**g fat | **{result.totals.carbohydrates}**g carbs",
+        "inline": False
+    })
+    
+    return {
+        "title": f"📅 {day.strftime('%A, %B %d, %Y')}",
+        "description": f"Batch: **{batch_name}**",
+        "color": 3447003,  # Blue
+        "fields": fields,
+        "footer": {
+            "text": f"💰 Daily Total: {result.totals.price_CZK} CZK"
+        }
+    }
+
+
+def create_shopping_list_embed(batch_result) -> dict:
+    """Create a Discord embed for a batch's shopping list."""
+    # Sort shopping list
     sorted_list = sorted(
         batch_result.shopping_list,
         key=lambda x: (batch_result._TYPE_ORDER.get(x[0].type, 999), x[0].name, x[0].variant)
     )
     
-    shopping_items = [f"{qty}x {food.name} ({food.variant})" for food, qty in sorted_list]
-    lines.append("🛒 " + ", ".join(shopping_items[:5]))  # Show first 5 items
-    if len(shopping_items) > 5:
-        lines.append(f"   ... and {len(shopping_items) - 5} more items")
+    # Group items by type
+    items_by_type = {}
+    for food, qty in sorted_list:
+        if food.type not in items_by_type:
+            items_by_type[food.type] = []
+        items_by_type[food.type].append(f"{qty}× {food.name} ({food.variant})")
     
-    return "\n".join(lines)
+    # Create fields for each type
+    fields = []
+    for food_type in ["Snídaně", "Svačina & dezert", "Hlavní jídlo", "Extras"]:
+        if food_type in items_by_type:
+            # Split into chunks if too many items
+            items = items_by_type[food_type]
+            value = "\n".join(items)
+            # Discord field value limit is 1024 characters
+            if len(value) > 1024:
+                value = "\n".join(items[:10]) + f"\n... and {len(items) - 10} more"
+            
+            fields.append({
+                "name": f"🛒 {food_type}",
+                "value": value,
+                "inline": False
+            })
+    
+    return {
+        "title": f"🛒 Shopping List - {batch_result.batch_name}",
+        "color": 3066993,  # Green
+        "fields": fields,
+        "footer": {
+            "text": f"💰 Batch Total: {batch_result.total_price} CZK"
+        }
+    }
 
 
-def send_to_discord(webhook_url: str, content: str):
-    """Send message to Discord webhook."""
-    # Discord has a 2000 character limit per message
-    chunks = []
-    current_chunk = ""
+def create_summary_embed(weeks, total_price, total_days, avg_price_per_day, 
+                         avg_calories, avg_protein, avg_fat, avg_carbs,
+                         target_nutrition) -> dict:
+    """Create a Discord embed for the summary statistics."""
+    fields = [
+        {
+            "name": "💰 Total Price",
+            "value": f"{total_price} CZK",
+            "inline": True
+        },
+        {
+            "name": "💵 Avg Price/Day",
+            "value": f"{avg_price_per_day:.0f} CZK",
+            "inline": True
+        },
+        {
+            "name": "📅 Total Days",
+            "value": str(total_days),
+            "inline": True
+        },
+        {
+            "name": "📈 Average Daily Nutrition",
+            "value": (
+                f"**Calories:** {avg_calories:.0f} kcal _(target: {target_nutrition.calories})_\n"
+                f"**Protein:** {avg_protein:.0f}g _(target: {target_nutrition.protein})_\n"
+                f"**Fat:** {avg_fat:.0f}g _(target: {target_nutrition.fat})_\n"
+                f"**Carbs:** {avg_carbs:.0f}g _(target: {target_nutrition.carbohydrates})_"
+            ),
+            "inline": False
+        }
+    ]
     
-    for line in content.split("\n"):
-        if len(current_chunk) + len(line) + 1 > 1900:  # Leave some buffer
-            chunks.append(current_chunk)
-            current_chunk = line
-        else:
-            if current_chunk:
-                current_chunk += "\n" + line
-            else:
-                current_chunk = line
-    
-    if current_chunk:
-        chunks.append(current_chunk)
-    
-    # Send each chunk
-    for chunk in chunks:
-        payload = {"content": chunk}
+    return {
+        "title": f"📊 Summary - Weeks {', '.join(map(str, weeks))}",
+        "color": 10181046,  # Purple
+        "fields": fields
+    }
+
+
+def send_embeds_to_discord(webhook_url: str, embeds: list):
+    """Send embeds to Discord webhook. Discord allows max 10 embeds per request."""
+    # Send embeds in batches of 10
+    for i in range(0, len(embeds), 10):
+        batch = embeds[i:i+10]
+        payload = {"embeds": batch}
         response = requests.post(webhook_url, json=payload)
         response.raise_for_status()
 
@@ -130,28 +211,19 @@ def main():
     avg_protein = sum_protein / total_days if total_days > 0 else 0
     avg_fat = sum_fat / total_days if total_days > 0 else 0
     avg_carbs = sum_carbs / total_days if total_days > 0 else 0
+    avg_price_per_day = total_price / total_days if total_days > 0 else 0
     
-    # Generate output
+    # Generate console output
     output_lines = []
     output_lines.append(f"📅 **Meal Plans for Weeks {', '.join(map(str, args.weeks))}**\n")
     
     for batch in selected_batches:
         if batch is None:
             continue
-        
-        if args.discord_webhook:
-            # Concise format for Discord
-            summary = format_batch_summary(batch)
-            output_lines.append(summary)
-            output_lines.append("")
-        else:
-            # Full format for console
-            output_lines.append(str(batch))
-            output_lines.append("")
+        output_lines.append(str(batch))
+        output_lines.append("")
     
     # Add summary statistics
-    avg_price_per_day = total_price / total_days if total_days > 0 else 0
-    
     output_lines.append("=" * 60)
     output_lines.append("📊 SUMMARY")
     output_lines.append("=" * 60)
@@ -174,7 +246,29 @@ def main():
     # Send to Discord if webhook provided
     if args.discord_webhook:
         try:
-            send_to_discord(args.discord_webhook, output)
+            embeds = []
+            
+            # Create embeds for each day
+            for batch in selected_batches:
+                if batch is None:
+                    continue
+                for day, result in batch.days:
+                    embeds.append(create_day_embed(day, result, batch.batch_name))
+            
+            # Create embeds for shopping lists
+            for batch in selected_batches:
+                if batch is None:
+                    continue
+                embeds.append(create_shopping_list_embed(batch))
+            
+            # Create summary embed
+            embeds.append(create_summary_embed(
+                args.weeks, total_price, total_days, avg_price_per_day,
+                avg_calories, avg_protein, avg_fat, avg_carbs, target_nutrition
+            ))
+            
+            # Send all embeds
+            send_embeds_to_discord(args.discord_webhook, embeds)
             print("\n✅ Successfully sent to Discord!", file=sys.stderr)
         except Exception as e:
             print(f"\n❌ Failed to send to Discord: {e}", file=sys.stderr)
