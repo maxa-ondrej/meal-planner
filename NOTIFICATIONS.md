@@ -1,6 +1,6 @@
-# Weekly Meal Plan Notifications
+# Bi-Weekly Meal Plan Notifications
 
-This repository includes a GitHub Action that automatically fetches meal plans and sends notifications to Discord every Monday at 8:00 AM using three separate webhooks for different types of content.
+This repository includes a GitHub Action that automatically fetches meal plans and sends notifications to Discord every 2 weeks (on Mondays at 8:00 AM) using three separate webhooks for different types of content.
 
 ## Setup Instructions
 
@@ -36,16 +36,16 @@ Add the webhook URLs as GitHub secrets. You can add one, two, or all three:
 ### 3. Enable GitHub Actions
 
 The workflow is defined in `.github/workflows/weekly-meal-plan.yml` and will:
-- Run automatically every Monday at 8:00 AM UTC
+- Run automatically every 2 weeks on Monday at 8:00 AM UTC (even week numbers only)
 - Fetch meal plans for weeks 2 and 3
 - Send beautifully formatted Discord embeds with:
   - Individual embeds for each day's meal plan
   - Shopping list embeds per batch
   - Summary statistics embed
 
-You can also trigger it manually:
+You can also trigger it manually (runs regardless of week number):
 1. Go to Actions tab in your GitHub repository
-2. Select "Weekly Meal Plan Notification"
+2. Select "Bi-Weekly Meal Plan Notification"
 3. Click "Run workflow"
 4. Optionally specify which weeks to fetch (e.g., "2 3")
 
@@ -78,7 +78,13 @@ poetry run python fetch_weekly_plan.py --weeks 2 3 \
 
 ### Change Schedule
 
-Edit `.github/workflows/weekly-meal-plan.yml` and modify the cron expression:
+The workflow runs bi-weekly (every 2 weeks on even ISO week numbers). To change this:
+
+**To run every week instead of every 2 weeks:**
+Remove or comment out the "Check if it's an even week" step in `.github/workflows/weekly-meal-plan.yml`
+
+**To change the day/time:**
+Edit the cron expression in `.github/workflows/weekly-meal-plan.yml`:
 
 ```yaml
 schedule:
@@ -89,6 +95,9 @@ Examples:
 - `'0 8 * * 1'` - Every Monday at 8:00 AM
 - `'0 7 * * 1,4'` - Every Monday and Thursday at 7:00 AM
 - `'30 9 * * 0'` - Every Sunday at 9:30 AM
+
+**To run on odd weeks instead of even weeks:**
+Change `if [ $((WEEK_NUMBER % 2)) -eq 0 ];` to `if [ $((WEEK_NUMBER % 2)) -eq 1 ];`
 
 ### Change Weeks
 

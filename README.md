@@ -7,7 +7,7 @@
 - **Personalized Nutrition**: Input your weight, height, age, gender, body fat, activity level, and weight goal.
 - **Menu Fetching**: Automatically downloads and parses real menus from Fingrlix.
 - **Optimization**: Uses linear programming to select the best combination of meals for your nutritional targets and budget.
-- **Automated Notifications**: GitHub Action that sends weekly meal plans to Discord every Monday.
+- **Automated Notifications**: GitHub Action that sends meal plans to Discord every 2 weeks.
 - **Extensible**: Modular codebase for easy extension and integration.
 
 ## How It Works
@@ -62,9 +62,9 @@ python -m fingrlix
 
 ## Automated Notifications
 
-Set up weekly meal plan notifications to Discord! See [NOTIFICATIONS.md](NOTIFICATIONS.md) for detailed setup instructions.
+Set up bi-weekly meal plan notifications to Discord! See [NOTIFICATIONS.md](NOTIFICATIONS.md) for detailed setup instructions.
 
-- Runs automatically every Monday at 8:00 AM
+- Runs automatically every 2 weeks on Monday at 8:00 AM
 - Fetches meal plans for upcoming weeks
 - Sends summarized shopping lists to Discord
 

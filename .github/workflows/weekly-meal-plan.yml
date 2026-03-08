@@ -1,8 +1,8 @@
-name: Weekly Meal Plan Notification
+name: Bi-Weekly Meal Plan Notification
 
 on:
   schedule:
-    # Run every Monday at 8:00 AM UTC (adjust timezone as needed)
+    # Run every Monday at 8:00 AM UTC, but only execute on even week numbers
     - cron: '0 8 * * 1'
   
   # Allow manual trigger from GitHub Actions tab
@@ -18,15 +18,33 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Check if it's an even week (bi-weekly schedule)
+        id: check_week
+        run: |
+          WEEK_NUMBER=$(date +%V)
+          echo "Current ISO week number: $WEEK_NUMBER"
+          
+          # Only run on even week numbers (every 2 weeks)
+          if [ $((WEEK_NUMBER % 2)) -eq 0 ]; then
+            echo "Even week - proceeding with meal plan"
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "Odd week - skipping this run"
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Checkout repository
+        if: steps.check_week.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         uses: actions/checkout@v4
       
       - name: Set up Python
+        if: steps.check_week.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       
       - name: Install Poetry
+        if: steps.check_week.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         uses: snok/install-poetry@v1
         with:
           version: latest
@@ -34,10 +52,12 @@ jobs:
           virtualenvs-in-project: true
       
       - name: Install dependencies
+        if: steps.check_week.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           poetry install --no-interaction
       
       - name: Fetch meal plans and send notification
+        if: steps.check_week.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
         env:
           DISCORD_WEBHOOK_MEALS: ${{ secrets.DISCORD_WEBHOOK_MEALS }}
           DISCORD_WEBHOOK_SHOPPING: ${{ secrets.DISCORD_WEBHOOK_SHOPPING }}
