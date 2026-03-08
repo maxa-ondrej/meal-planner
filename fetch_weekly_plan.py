@@ -151,9 +151,19 @@ def main():
         help="Which weeks to fetch (default: 2 3)"
     )
     parser.add_argument(
-        "--discord-webhook",
+        "--discord-webhook-meals",
         type=str,
-        help="Discord webhook URL to send results to"
+        help="Discord webhook URL for daily meal plan embeds"
+    )
+    parser.add_argument(
+        "--discord-webhook-shopping",
+        type=str,
+        help="Discord webhook URL for shopping list embeds"
+    )
+    parser.add_argument(
+        "--discord-webhook-summary",
+        type=str,
+        help="Discord webhook URL for summary embed"
     )
     args = parser.parse_args()
 
@@ -243,33 +253,44 @@ def main():
     # Print to console
     print(output)
     
-    # Send to Discord if webhook provided
-    if args.discord_webhook:
+    # Send to Discord if webhooks provided
+    any_webhook = args.discord_webhook_meals or args.discord_webhook_shopping or args.discord_webhook_summary
+    if any_webhook:
         try:
-            embeds = []
+            # Send daily meal plan embeds
+            if args.discord_webhook_meals:
+                meal_embeds = []
+                for batch in selected_batches:
+                    if batch is None:
+                        continue
+                    for day, result in batch.days:
+                        meal_embeds.append(create_day_embed(day, result, batch.batch_name))
+                
+                if meal_embeds:
+                    send_embeds_to_discord(args.discord_webhook_meals, meal_embeds)
+                    print(f"✅ Sent {len(meal_embeds)} meal plan embeds to Discord!", file=sys.stderr)
             
-            # Create embeds for each day
-            for batch in selected_batches:
-                if batch is None:
-                    continue
-                for day, result in batch.days:
-                    embeds.append(create_day_embed(day, result, batch.batch_name))
+            # Send shopping list embeds
+            if args.discord_webhook_shopping:
+                shopping_embeds = []
+                for batch in selected_batches:
+                    if batch is None:
+                        continue
+                    shopping_embeds.append(create_shopping_list_embed(batch))
+                
+                if shopping_embeds:
+                    send_embeds_to_discord(args.discord_webhook_shopping, shopping_embeds)
+                    print(f"✅ Sent {len(shopping_embeds)} shopping list embeds to Discord!", file=sys.stderr)
             
-            # Create embeds for shopping lists
-            for batch in selected_batches:
-                if batch is None:
-                    continue
-                embeds.append(create_shopping_list_embed(batch))
+            # Send summary embed
+            if args.discord_webhook_summary:
+                summary_embed = create_summary_embed(
+                    args.weeks, total_price, total_days, avg_price_per_day,
+                    avg_calories, avg_protein, avg_fat, avg_carbs, target_nutrition
+                )
+                send_embeds_to_discord(args.discord_webhook_summary, [summary_embed])
+                print("✅ Sent summary embed to Discord!", file=sys.stderr)
             
-            # Create summary embed
-            embeds.append(create_summary_embed(
-                args.weeks, total_price, total_days, avg_price_per_day,
-                avg_calories, avg_protein, avg_fat, avg_carbs, target_nutrition
-            ))
-            
-            # Send all embeds
-            send_embeds_to_discord(args.discord_webhook, embeds)
-            print("\n✅ Successfully sent to Discord!", file=sys.stderr)
         except Exception as e:
             print(f"\n❌ Failed to send to Discord: {e}", file=sys.stderr)
             sys.exit(1)

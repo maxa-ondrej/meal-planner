@@ -39,11 +39,27 @@ jobs:
       
       - name: Fetch meal plans and send notification
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_MEALS: ${{ secrets.DISCORD_WEBHOOK_MEALS }}
+          DISCORD_WEBHOOK_SHOPPING: ${{ secrets.DISCORD_WEBHOOK_SHOPPING }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
         run: |
-          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
-            echo "⚠️  DISCORD_WEBHOOK_URL secret not set. Running without Discord notification."
+          WEBHOOK_ARGS=""
+          
+          if [ -n "$DISCORD_WEBHOOK_MEALS" ]; then
+            WEBHOOK_ARGS="$WEBHOOK_ARGS --discord-webhook-meals \"$DISCORD_WEBHOOK_MEALS\""
+          fi
+          
+          if [ -n "$DISCORD_WEBHOOK_SHOPPING" ]; then
+            WEBHOOK_ARGS="$WEBHOOK_ARGS --discord-webhook-shopping \"$DISCORD_WEBHOOK_SHOPPING\""
+          fi
+          
+          if [ -n "$DISCORD_WEBHOOK_SUMMARY" ]; then
+            WEBHOOK_ARGS="$WEBHOOK_ARGS --discord-webhook-summary \"$DISCORD_WEBHOOK_SUMMARY\""
+          fi
+          
+          if [ -z "$WEBHOOK_ARGS" ]; then
+            echo "⚠️  No Discord webhook secrets set. Running without Discord notifications."
             poetry run python fetch_weekly_plan.py --weeks ${{ github.event.inputs.weeks || '2 3' }}
           else
-            poetry run python fetch_weekly_plan.py --weeks ${{ github.event.inputs.weeks || '2 3' }} --discord-webhook "$DISCORD_WEBHOOK_URL"
+            eval poetry run python fetch_weekly_plan.py --weeks ${{ github.event.inputs.weeks || '2 3' }} $WEBHOOK_ARGS
           fi

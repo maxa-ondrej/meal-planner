@@ -1,26 +1,37 @@
 # Weekly Meal Plan Notifications
 
-This repository includes a GitHub Action that automatically fetches meal plans and sends notifications to Discord every Monday at 8:00 AM.
+This repository includes a GitHub Action that automatically fetches meal plans and sends notifications to Discord every Monday at 8:00 AM using three separate webhooks for different types of content.
 
 ## Setup Instructions
 
-### 1. Create a Discord Webhook
+### 1. Create Discord Webhooks
 
+You can create up to 3 webhooks to send different types of information to different channels:
+
+1. **Meal Plans Webhook** (optional): Daily meal plan embeds
+2. **Shopping Lists Webhook** (optional): Shopping list embeds per batch
+3. **Summary Webhook** (optional): Summary statistics embed
+
+For each webhook you want to create:
 1. Open your Discord server
 2. Go to Server Settings → Integrations → Webhooks
 3. Click "New Webhook"
-4. Give it a name (e.g., "Meal Planner")
-5. Select the channel where you want notifications
+4. Give it a descriptive name (e.g., "Meal Plans", "Shopping Lists", "Summary")
+5. Select the channel where you want that type of notification
 6. Click "Copy Webhook URL"
 
-### 2. Configure GitHub Secret
+**Tip:** You can send all types to the same channel by using the same webhook URL for all three, or split them across different channels.
+
+### 2. Configure GitHub Secrets
+
+Add the webhook URLs as GitHub secrets. You can add one, two, or all three:
 
 1. Go to your GitHub repository
 2. Navigate to Settings → Secrets and variables → Actions
-3. Click "New repository secret"
-4. Name: `DISCORD_WEBHOOK_URL`
-5. Value: Paste the webhook URL from Discord
-6. Click "Add secret"
+3. Click "New repository secret" for each webhook:
+   - Name: `DISCORD_WEBHOOK_MEALS` → Value: Paste webhook URL for meal plans
+   - Name: `DISCORD_WEBHOOK_SHOPPING` → Value: Paste webhook URL for shopping lists
+   - Name: `DISCORD_WEBHOOK_SUMMARY` → Value: Paste webhook URL for summary
 
 ### 3. Enable GitHub Actions
 
@@ -43,11 +54,24 @@ You can also trigger it manually:
 You can also run the script locally:
 
 ```bash
-# Fetch weeks 2 and 3 (console output)
+# Fetch weeks 2 and 3 (console output only)
 poetry run python fetch_weekly_plan.py --weeks 2 3
 
-# Send to Discord
-poetry run python fetch_weekly_plan.py --weeks 2 3 --discord-webhook "YOUR_WEBHOOK_URL"
+# Send to Discord (all types to same webhook)
+poetry run python fetch_weekly_plan.py --weeks 2 3 \
+  --discord-webhook-meals "YOUR_WEBHOOK_URL" \
+  --discord-webhook-shopping "YOUR_WEBHOOK_URL" \
+  --discord-webhook-summary "YOUR_WEBHOOK_URL"
+
+# Send to different channels (separate webhooks)
+poetry run python fetch_weekly_plan.py --weeks 2 3 \
+  --discord-webhook-meals "MEALS_WEBHOOK_URL" \
+  --discord-webhook-shopping "SHOPPING_WEBHOOK_URL" \
+  --discord-webhook-summary "SUMMARY_WEBHOOK_URL"
+
+# Send only specific types
+poetry run python fetch_weekly_plan.py --weeks 2 3 \
+  --discord-webhook-summary "SUMMARY_WEBHOOK_URL"
 ```
 
 ## Customization
